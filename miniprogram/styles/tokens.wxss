@@ -1,0 +1,46 @@
+/*
+ * PetPoster design tokens
+ * Source frame: Figma React preview, 390px x 844px.
+ * Mini program base: 750rpx width, so 1px = 1.923076rpx.
+ * Keep page/component dimensions on this scale unless a real-device safe area
+ * requires an explicit exception.
+ */
+
+page {
+  --pp-scale: 1.923076;
+  --pp-ink: #161311;
+  --pp-ink-2: #3A322E;
+  --pp-muted: #8C817A;
+  --pp-line: #E8DFD4;
+  --pp-bg: #F7F2EA;
+  --pp-card: #FFFFFF;
+  --pp-brand: #C2502B;
+  --pp-brand-dark: #9C3E20;
+  --pp-brand-soft: #F4E4DA;
+  --pp-teal: #4C7A6E;
+  --pp-card-radius: 31rpx;
+  --pp-pill-radius: 999rpx;
+  --pp-screen-x: 38rpx;
+  --pp-nav-x: 31rpx;
+  --pp-status-h: 84rpx;
+  --pp-topbar-h: 77rpx;
+  --pp-mininav-h: 81rpx;
+  --pp-tabbar-h: 88rpx;
+  --pp-font-serif: "Cormorant Garamond", "Noto Serif SC", "Songti SC", Georgia, serif;
+}
+
+.pp-serif {
+  font-family: "Cormorant Garamond", "Noto Serif SC", "Songti SC", Georgia, serif;
+}
+
+.pp-card {
+  border-radius: 31rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8DFD4;
+}
+
+.pp-overline {
+  font-size: 19rpx;
+  letter-spacing: 6rpx;
+  color: #8C817A;
+}

@@ -1,0 +1,10 @@
+<view class="tabbar">
+  <button class="tab-item {{active == 'home' ? 'tab-on' : ''}}" data-tab="home" bindtap="onChange">
+    <image class="tab-icon-img" src="{{active == 'home' ? '/assets/icons/home-brand.svg' : '/assets/icons/home-muted.svg'}}" mode="aspectFit" />
+    <text class="tab-text">创作</text>
+  </button>
+  <button class="tab-item {{active == 'mine' ? 'tab-on' : ''}}" data-tab="mine" bindtap="onChange">
+    <image class="tab-icon-img" src="{{active == 'mine' ? '/assets/icons/user-brand.svg' : '/assets/icons/user-muted.svg'}}" mode="aspectFit" />
+    <text class="tab-text">我的</text>
+  </button>
+</view>

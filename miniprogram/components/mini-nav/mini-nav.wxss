@@ -1,0 +1,78 @@
+.mini-nav {
+  position: relative;
+  height: 81rpx;
+  padding: 0 31rpx 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.nav-circle,
+.nav-placeholder {
+  width: 62rpx;
+  height: 62rpx;
+}
+
+.nav-circle {
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 6rpx 18rpx rgba(22, 19, 17, 0.08);
+  color: #161311;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.nav-circle::after {
+  border: 0;
+}
+
+.nav-title {
+  position: absolute;
+  left: 50%;
+  top: 11rpx;
+  transform: translateX(-50%);
+  font-size: 29rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  color: #161311;
+}
+
+.nav-capsule {
+  height: 62rpx;
+  min-width: 92rpx;
+  border-radius: 31rpx;
+  padding: 0 15rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 6rpx 18rpx rgba(22, 19, 17, 0.08);
+  color: #161311;
+  font-size: 23rpx;
+  box-sizing: border-box;
+}
+
+.nav-capsule view {
+  width: 2rpx;
+  height: 23rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 13rpx;
+}
+
+.nav-icon {
+  width: 35rpx;
+  height: 35rpx;
+}
+
+.nav-more-icon {
+  width: 31rpx;
+  height: 31rpx;
+}
+
+.nav-dot-icon {
+  width: 19rpx;
+  height: 19rpx;
+}

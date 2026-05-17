@@ -1,0 +1,42 @@
+.status-bar {
+  height: 84rpx;
+  padding: 15rpx 54rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #161311;
+  box-sizing: border-box;
+}
+
+.status-time {
+  font-size: 27rpx;
+  font-weight: 600;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+}
+
+.signal {
+  width: 31rpx;
+  height: 15rpx;
+  border-radius: 4rpx;
+  background: rgba(22, 19, 17, 0.8);
+  margin-right: 8rpx;
+}
+
+.dot {
+  width: 15rpx;
+  height: 15rpx;
+  border-radius: 50%;
+  background: rgba(22, 19, 17, 0.8);
+  margin-right: 8rpx;
+}
+
+.battery {
+  width: 38rpx;
+  height: 19rpx;
+  border: 2rpx solid rgba(22, 19, 17, 0.8);
+  border-radius: 6rpx;
+}

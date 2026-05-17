@@ -1,0 +1,13 @@
+<view class="mini-nav">
+  <button wx:if="{{showBack}}" class="nav-circle" bindtap="onBack">
+    <image class="nav-icon" src="/assets/icons/chevron-left.svg" mode="aspectFit" />
+  </button>
+  <view wx:else class="nav-placeholder"></view>
+  <text class="nav-title">{{title}}</text>
+  <view wx:if="{{rightCapsule}}" class="nav-capsule">
+    <image class="nav-more-icon" src="/assets/icons/more-horizontal.svg" mode="aspectFit" />
+    <view></view>
+    <image class="nav-dot-icon" src="/assets/icons/circle-fill.svg" mode="aspectFit" />
+  </view>
+  <view wx:else class="nav-placeholder"></view>
+</view>

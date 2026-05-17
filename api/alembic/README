@@ -1,0 +1,3 @@
+Alembic 迁移目录。
+
+下一阶段先创建 admin_users、templates、generation_tasks 三张表。

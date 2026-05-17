@@ -1,0 +1,91 @@
+{
+  "petPhotos": [
+    {
+      "id": "pet-01",
+      "expectedPath": "/assets/images/pet-01.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?w=600&q=80"
+    },
+    {
+      "id": "pet-02",
+      "expectedPath": "/assets/images/pet-02.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1629740067905-bd3f515aa739?w=600&q=80"
+    },
+    {
+      "id": "pet-03",
+      "expectedPath": "/assets/images/pet-03.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=600&q=80"
+    },
+    {
+      "id": "pet-04",
+      "expectedPath": "/assets/images/pet-04.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600&q=80"
+    },
+    {
+      "id": "pet-05",
+      "expectedPath": "/assets/images/pet-05.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1596490634801-c536934af56e?w=600&q=80"
+    },
+    {
+      "id": "pet-06",
+      "expectedPath": "/assets/images/pet-06.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1594592237655-9f7e51330b93?w=600&q=80"
+    },
+    {
+      "id": "pet-07",
+      "expectedPath": "/assets/images/pet-07.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1498100152307-ce63fd6c5424?w=600&q=80"
+    },
+    {
+      "id": "pet-08",
+      "expectedPath": "/assets/images/pet-08.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1611843275167-a9bba9aa65dd?w=600&q=80"
+    },
+    {
+      "id": "pet-09",
+      "expectedPath": "/assets/images/pet-09.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1559624989-7b9303bd9792?w=600&q=80"
+    }
+  ],
+  "styleCards": [
+    {
+      "id": "oil",
+      "expectedPath": "/assets/images/style-oil.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1752306639329-02e07c8ec4cd?w=800&q=80"
+    },
+    {
+      "id": "anime",
+      "expectedPath": "/assets/images/style-ink-wash.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1741037306855-9165f043127c?w=800&q=80"
+    },
+    {
+      "id": "watercolor",
+      "expectedPath": "/assets/images/style-watercolor.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1763073066060-66c4fda08f38?w=800&q=80"
+    },
+    {
+      "id": "magazine",
+      "expectedPath": "/assets/images/style-editorial.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1611843275167-a9bba9aa65dd?w=800&q=80"
+    },
+    {
+      "id": "polaroid",
+      "expectedPath": "/assets/images/style-vintage-film.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1594592237655-9f7e51330b93?w=800&q=80"
+    },
+    {
+      "id": "studio",
+      "expectedPath": "/assets/images/style-minimal-portrait.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1498100152307-ce63fd6c5424?w=800&q=80"
+    },
+    {
+      "id": "fairy",
+      "expectedPath": "/assets/images/style-dreamscape.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1763494893425-5faf136b3b79?w=800&q=80"
+    },
+    {
+      "id": "ink",
+      "expectedPath": "/assets/images/style-charcoal.png",
+      "sourceUrl": "https://images.unsplash.com/photo-1559624989-7b9303bd9792?w=800&q=80"
+    }
+  ]
+}

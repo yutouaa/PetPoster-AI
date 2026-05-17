@@ -1,0 +1,486 @@
+<view class="page-shell">
+  <view wx:if="{{current == 'home'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+
+    <view class="home-topbar">
+      <view class="brand-wrap">
+        <view class="brand-logo">P</view>
+        <text class="brand-name">宠物海报</text>
+      </view>
+      <view class="top-actions">
+        <button class="round-icon"><image class="icon-img" src="/assets/icons/search.svg" mode="aspectFit" /></button>
+        <button class="round-icon notice-dot"><image class="icon-img" src="/assets/icons/bell.svg" mode="aspectFit" /></button>
+      </view>
+    </view>
+
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content home-scroll">
+      <button class="hero-card" bindtap="openStyle">
+        <image class="hero-img" src="{{styleCards[0].image}}" mode="aspectFill" />
+        <view class="hero-mask"></view>
+        <view class="hero-copy">
+          <text class="overline light">本周精选 · WEEKLY</text>
+          <view class="hero-title">
+            <text>为每一只它</text>
+            <text class="italic">留一幅肖像。</text>
+          </view>
+        </view>
+        <view class="hero-foot">
+          <view>
+            <text class="overline light muted-light">FEATURED STYLE</text>
+            <text class="hero-style">古典油画系列</text>
+          </view>
+          <view class="view-pill">
+            <text>查看</text>
+            <image class="chev-icon" src="/assets/icons/chevron-right.svg" mode="aspectFit" />
+          </view>
+        </view>
+      </button>
+
+      <view class="section-head">
+        <view>
+          <text class="overline">YOUR LIBRARY</text>
+          <text class="display small">它的照片</text>
+        </view>
+        <text class="section-note">按住拖动 · {{photoCount}} / 9</text>
+      </view>
+      <view class="hairline"></view>
+
+      <view class="photo-grid">
+        <view wx:for="{{photos}}" wx:key="id" class="photo-tile {{lastAddedPhotoId == item.id ? 'photo-pop' : ''}}">
+          <image src="{{item.url}}" mode="aspectFill" class="fill-img" />
+          <view wx:if="{{item.cover}}" class="cover-badge">COVER</view>
+        </view>
+        <button wx:if="{{canAddPhoto}}" class="photo-add" bindtap="openSheet">
+          <image class="add-plus" src="/assets/icons/plus-muted.svg" mode="aspectFit" />
+          <text class="add-label">ADD</text>
+        </button>
+      </view>
+      <text class="hint-text">按住任意一张照片拖动 · 第一张作为主图</text>
+    </scroll-view>
+
+    <view class="home-cta-wrap">
+      <button class="home-cta" disabled="{{photoCount == 0}}" bindtap="openStyle">
+        <view class="cta-copy">
+          <text class="overline light muted-light">STEP · 02</text>
+          <text class="cta-title">选择艺术风格</text>
+        </view>
+        <view class="cta-right">
+          <view class="cta-count">
+            <text class="overline light muted-light">SELECTED</text>
+            <text class="count-num">{{photoCount}} 张</text>
+          </view>
+          <view class="cta-arrow"><image class="cta-arrow-icon" src="/assets/icons/chevron-right.svg" mode="aspectFit" /></view>
+        </view>
+      </button>
+    </view>
+
+    <tab-bar active="{{current}}" bindchange="switchTab" />
+    <block wx:if="{{sheetVisible}}">
+      <view class="sheet-mask {{sheetActive ? 'sheet-mask-on' : ''}}" bindtap="closeSheet"></view>
+      <view class="sheet-panel {{sheetActive ? 'sheet-panel-on' : ''}}">
+        <view class="sheet-handle"></view>
+        <view class="sheet-head">
+          <view>
+            <text class="overline">ADD · PHOTO</text>
+            <text class="sheet-title">添加宠物照片</text>
+          </view>
+          <button class="sheet-close" bindtap="closeSheet"><image class="icon-img" src="/assets/icons/x.svg" mode="aspectFit" /></button>
+        </view>
+        <view class="sheet-list">
+          <button class="sheet-row" bindtap="addPhoto">
+            <view class="sheet-icon"><image class="row-icon-img" src="/assets/icons/camera-brand.svg" mode="aspectFit" /></view>
+            <view class="sheet-copy">
+              <text class="sheet-row-title">拍摄照片</text>
+              <text class="sheet-row-sub">实时取景一只</text>
+            </view>
+            <image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" />
+          </button>
+          <view class="soft-line"></view>
+          <button class="sheet-row" bindtap="addPhoto">
+            <view class="sheet-icon"><image class="row-icon-img" src="/assets/icons/image-brand.svg" mode="aspectFit" /></view>
+            <view class="sheet-copy">
+              <text class="sheet-row-title">从相册选择</text>
+              <text class="sheet-row-sub">最多再选 {{9 - photoCount}} 张</text>
+            </view>
+            <image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" />
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{current == 'style'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="选择风格" show-back="{{true}}" bindback="goBack" />
+
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content style-scroll">
+      <text class="overline">STYLE · COLLECTION</text>
+      <view class="headline">
+        <text class="display">八种风格，</text>
+        <text class="display accent italic">一只缪斯。</text>
+      </view>
+      <text class="subcopy">已选 {{photoCount}} 张照片 · 选择一个风格开始创作</text>
+
+      <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="cat-scroll">
+        <view class="cat-row">
+          <button wx:for="{{cats}}" wx:key="*this" class="chip {{cat == item ? 'chip-on' : ''}}" data-cat="{{item}}" bindtap="setCat">{{item}}</button>
+        </view>
+      </scroll-view>
+
+      <view class="style-grid">
+        <button wx:for="{{filteredStyles}}" wx:key="id" class="style-card {{picked == item.id ? 'style-card-on' : ''}}" data-id="{{item.id}}" bindtap="pickStyle">
+          <image src="{{item.image}}" mode="aspectFill" class="fill-img" />
+          <view class="card-shade"></view>
+          <text class="style-no">N°{{item.no}}</text>
+          <view wx:if="{{picked == item.id}}" class="check-dot"><image src="/assets/icons/check.svg" mode="aspectFit" /></view>
+          <view class="style-name-wrap">
+            <text class="style-en">{{item.enUpper}}</text>
+            <text class="style-name">{{item.name}}</text>
+          </view>
+        </button>
+      </view>
+    </scroll-view>
+
+    <view class="bottom-action">
+      <view class="current-style">
+        <image class="current-thumb" src="{{pickedStyle.image}}" mode="aspectFill" />
+        <view class="current-copy">
+          <text class="overline">CURRENT</text>
+          <text class="current-name">{{pickedStyle.name}}</text>
+        </view>
+        <text class="quota">余 12 次</text>
+      </view>
+      <button class="primary-btn" bindtap="startGenerate">用这个风格生成</button>
+    </view>
+  </view>
+
+  <view wx:if="{{current == 'generating'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="正在创作" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+
+    <view class="generate-body">
+      <view class="poster-stage">
+        <image src="{{displayResultImage}}" mode="aspectFill" class="fill-img" />
+        <view class="dark-cover"></view>
+        <view class="scan-line" style="top: {{progress}}%;"></view>
+        <view class="particle p1"></view>
+        <view class="particle p2"></view>
+        <view class="particle p3"></view>
+        <view class="particle p4"></view>
+        <view class="particle p5"></view>
+        <text class="render-badge">RENDERING</text>
+        <view class="poster-caption">
+          <text class="style-en">{{currentStyle.enUpper}}</text>
+          <text class="poster-title">{{currentStyle.name}}</text>
+        </view>
+      </view>
+
+      <view class="progress-panel">
+        <view class="progress-head">
+          <view>
+            <text class="overline">PROGRESS</text>
+            <text class="display progress-title">AI 正在为你作画</text>
+          </view>
+          <text class="percent">{{progress}}%</text>
+        </view>
+        <view class="progress-track">
+          <view class="progress-fill" style="width: {{progress}}%;"></view>
+        </view>
+        <view class="step-list">
+          <view wx:for="{{renderSteps}}" wx:key="id" class="step-row {{item.done ? 'step-done' : ''}} {{item.active ? 'step-active' : ''}}">
+            <view class="step-mark">
+              <image wx:if="{{item.done}}" class="step-check" src="/assets/icons/check-white.svg" mode="aspectFit" />
+              <text wx:else>{{item.mark}}</text>
+            </view>
+            <text class="step-text">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+      <text class="eta">预计还需 {{remainSeconds}} 秒</text>
+    </view>
+  </view>
+
+  <view wx:if="{{current == 'result'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="创作完成" show-back="{{true}}" bindback="goBack" />
+
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content result-scroll">
+      <text class="overline">FINAL · ARTWORK</text>
+      <view class="headline">
+        <text class="display mid">为它定格的，</text>
+        <text class="display mid accent italic">这一幅。</text>
+      </view>
+
+      <view class="result-poster">
+        <image src="{{displayResultImage}}" mode="aspectFill" class="fill-img" />
+        <view class="card-shade strong"></view>
+        <text class="poster-tag">{{currentStyle.enUpper}}</text>
+        <button class="heart-btn {{liked ? 'heart-on' : ''}}" bindtap="toggleLike">
+          <image class="heart-icon" src="{{liked ? '/assets/icons/heart-brand-fill.svg' : '/assets/icons/heart.svg'}}" mode="aspectFit" />
+        </button>
+        <view class="poster-caption result-caption">
+          <text class="overline light muted-light">PETPOSTER · ATELIER</text>
+          <text class="result-title">{{currentStyle.name}}</text>
+          <text class="result-no">N°028 · 2026</text>
+        </view>
+      </view>
+
+      <view class="source-wrap">
+        <text class="overline">BASED ON</text>
+        <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="source-row">
+          <view class="source-list">
+            <image wx:for="{{sourcePhotos}}" wx:key="id" class="source-img" src="{{item.url}}" mode="aspectFill" />
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="meta-card">
+        <view class="meta-row"><text>分辨率</text><text>{{resultMeta.resolution}}</text></view>
+        <view class="soft-line"></view>
+        <view class="meta-row"><text>生成耗时</text><text>{{resultMeta.elapsed}}</text></view>
+        <view class="soft-line"></view>
+        <view class="meta-row"><text>风格</text><text>{{resultMeta.style || currentStyle.name}}</text></view>
+      </view>
+      <text wx:if="{{generationError}}" class="hint-text">{{generationError}}</text>
+
+      <view class="result-actions">
+        <view class="action-grid">
+          <button class="action-btn {{saved ? 'saved' : 'primary'}}" bindtap="saveResult"><image class="btn-icon" src="/assets/icons/download-white.svg" mode="aspectFit" />{{saved ? '已保存' : '保存到相册'}}</button>
+          <button class="action-btn outline"><image class="btn-icon" src="/assets/icons/share.svg" mode="aspectFit" />分享给朋友</button>
+          <button class="action-btn outline" data-screen="generating" bindtap="setScreen"><image class="btn-icon" src="/assets/icons/rotate.svg" mode="aspectFit" />再次生成</button>
+          <button class="action-btn outline" data-screen="style" bindtap="setScreen"><image class="btn-icon" src="/assets/icons/palette.svg" mode="aspectFit" />换个风格</button>
+        </view>
+        <button class="home-link" data-screen="home" bindtap="setScreen">返回首页</button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'history'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="创作历史" show-back="{{true}}" bindback="goBack" />
+
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <text class="overline">ARCHIVE</text>
+      <view class="archive-head">
+        <view class="headline">
+          <text class="display">它的</text><text class="display accent italic">画廊</text>
+        </view>
+        <text class="section-note">共 {{historyItems.length}} 张</text>
+      </view>
+      <view class="filter-row">
+        <text class="chip chip-on">全部</text>
+        <text class="chip">已保存</text>
+        <text class="chip">未保存</text>
+      </view>
+
+      <view class="history-list">
+        <view wx:if="{{historyItems.length === 0}}" class="empty-state">
+          <text class="empty-text">还没有生成记录</text>
+          <text class="empty-hint">去选择一个风格，为宠物创作海报吧</text>
+        </view>
+        <button wx:for="{{historyItems}}" wx:key="id" class="history-card" bindtap="openResult">
+          <image class="history-img" src="{{item.image}}" mode="aspectFill" />
+          <view class="history-copy">
+            <text class="overline">N°{{item.no}}</text>
+            <text class="history-title">{{item.style}}</text>
+            <text class="history-date">{{item.date}}</text>
+            <view class="history-tools">
+              <view class="tool-action"><image class="tool-icon" src="/assets/icons/download.svg" mode="aspectFit" /><text>下载</text></view>
+              <view class="tool-divider"></view>
+              <view class="tool-action"><image class="tool-icon" src="/assets/icons/rotate.svg" mode="aspectFit" /><text>再生成</text></view>
+              <text class="history-status {{item.saved ? 'status-saved' : 'status-done'}}">{{item.status}}</text>
+            </view>
+          </view>
+          <image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" />
+        </button>
+      </view>
+      <text wx:if="{{historyItems.length > 0}}" class="end-text">— END OF ARCHIVE —</text>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'mine'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="我的" />
+
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content mine-scroll">
+      <view class="profile-card">
+        <view class="profile-main">
+          <image class="avatar" src="{{petPhotos[2]}}" mode="aspectFill" />
+          <view class="profile-copy">
+            <text class="overline">MEMBER</text>
+            <text class="profile-name">铲屎官小橘</text>
+            <text class="profile-sub">高级会员 · 至 2026-09-12</text>
+          </view>
+          <button class="manage-btn">管理</button>
+        </view>
+        <view class="stats">
+          <view class="stat"><text>28</text><text>海报</text></view>
+          <view class="stat-line"></view>
+          <view class="stat"><text>120</text><text>积分</text></view>
+          <view class="stat-line"></view>
+          <view class="stat"><text>14</text><text>收藏</text></view>
+        </view>
+      </view>
+
+      <view class="promo-card">
+        <view>
+          <text class="overline light muted-light">OFFER · 06.30</text>
+          <view class="promo-title">充值套餐 <text>六折</text></view>
+          <text class="promo-sub">单次低至 ¥0.6 · 限时三天</text>
+        </view>
+        <button class="promo-btn" data-screen="wallet" bindtap="setScreen">去充值</button>
+      </view>
+
+      <view class="group">
+        <text class="overline">MY · CREATION</text>
+        <view class="group-card">
+          <button class="list-row" data-screen="history" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/clock-brand.svg" mode="aspectFit" /></view><view><text>创作历史</text><text>共 {{historyItems.length}} 张海报</text></view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+          <button class="list-row last" data-screen="favorites" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/heart-brand-fill.svg" mode="aspectFit" /></view><view><text>我的收藏</text><text>{{favs.length}} 张已收藏</text></view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+        </view>
+      </view>
+
+      <view class="group">
+        <text class="overline">ACCOUNT</text>
+        <view class="group-card">
+          <button class="list-row" data-screen="wallet" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/wallet-brand.svg" mode="aspectFit" /></view><view><text>充值记录</text><text>近一次 · 5 月 10 日</text></view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+          <button class="list-row last" data-screen="notif" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/bell.svg" mode="aspectFit" /></view><view><text>消息通知</text><text>2 条未读</text></view><text class="unread-pill">2</text><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+        </view>
+      </view>
+
+      <view class="group">
+        <text class="overline">GENERAL</text>
+        <view class="group-card">
+          <button class="list-row" data-screen="settings" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/settings-brand.svg" mode="aspectFit" /></view><view><text>个人信息设置</text></view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+          <button class="list-row last" data-screen="help" bindtap="setScreen"><view class="row-icon"><image class="row-icon-img" src="/assets/icons/help-brand.svg" mode="aspectFit" /></view><view><text>帮助与反馈</text></view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></button>
+        </view>
+      </view>
+      <text class="version">PETPOSTER · V 1.2.0</text>
+    </scroll-view>
+
+    <tab-bar active="{{current}}" bindchange="switchTab" />
+  </view>
+
+  <view wx:if="{{current == 'favorites'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="我的收藏" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <text class="overline">FAVORITES</text>
+      <view class="archive-head">
+        <view class="headline"><text class="display">珍藏的</text><text class="display accent italic">瞬间</text></view>
+        <text class="section-note">共 {{favs.length}} 张</text>
+      </view>
+      <view class="style-grid">
+        <button wx:for="{{favs}}" wx:key="id" class="style-card" bindtap="openResult">
+          <image src="{{item.image}}" mode="aspectFill" class="fill-img" />
+          <view class="card-shade"></view>
+          <image class="fav-heart" src="/assets/icons/heart-brand-fill.svg" mode="aspectFit" />
+          <view class="style-name-wrap">
+            <text class="style-en">N°{{index + 1}}</text>
+            <text class="style-name">{{item.style}}</text>
+          </view>
+        </button>
+      </view>
+      <text class="end-text">— END —</text>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'wallet'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="充值记录" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <view class="balance-card">
+        <text class="overline light muted-light">CURRENT · BALANCE</text>
+        <view class="balance-row"><text>120</text><text>次 · 可用</text></view>
+        <view class="balance-actions"><button>立即充值</button><button>兑换码</button></view>
+      </view>
+      <text class="overline block-title">RECORDS</text>
+      <view class="group-card">
+        <view wx:for="{{purchases}}" wx:key="id" class="purchase-row {{index == purchases.length - 1 ? 'last' : ''}}">
+          <view class="row-icon"><image class="row-icon-img" src="/assets/icons/wallet-brand.svg" mode="aspectFit" /></view>
+          <view class="purchase-copy"><text>{{item.title}}</text><text>{{item.date}} · {{item.status}}</text></view>
+          <view class="purchase-price"><text>{{item.amount}}</text><text>{{item.credit}}</text></view>
+        </view>
+      </view>
+      <text class="hint-center">仅展示近 90 天记录</text>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'notif'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="消息通知" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <view class="inbox-head">
+        <view><text class="overline">INBOX</text><text class="display mid">未读 2 条</text></view>
+        <button>全部已读</button>
+      </view>
+      <view class="notif-list">
+        <view wx:for="{{notifs}}" wx:key="id" class="notif-card">
+          <view wx:if="{{item.unread}}" class="unread-dot"></view>
+          <view class="notif-meta"><text>{{item.tag}}</text><text>{{item.time}}</text></view>
+          <text class="notif-title">{{item.title}}</text>
+          <text class="notif-body">{{item.body}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'settings'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="个人信息" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <text class="overline">PROFILE</text>
+      <text class="display mid">账户与偏好</text>
+      <view class="group-card block-gap">
+        <view class="profile-row"><text>头像</text><view><image src="{{petPhotos[2]}}" class="tiny-avatar" mode="aspectFill" /><image class="profile-inline-icon" src="/assets/icons/camera-brand.svg" mode="aspectFit" /></view></view>
+        <view class="profile-row"><text>昵称</text><view><text>铲屎官小橘</text><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+        <view class="profile-row"><text>手机号</text><view><text>138 **** 6688</text><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+        <view class="profile-row"><text>性别</text><view><text>保密</text><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+        <view class="profile-row last"><text>生日</text><view><text>2002 / 06 / 18</text><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+      </view>
+
+      <text class="overline block-title">PREFERENCE</text>
+      <view class="group-card">
+        <button class="switch-row" data-key="done" bindtap="togglePref"><text>生成完成提醒</text><view class="switch {{prefs.done ? 'switch-on' : ''}}"><view></view></view></button>
+        <button class="switch-row" data-key="promo" bindtap="togglePref"><text>活动与优惠推送</text><view class="switch {{prefs.promo ? 'switch-on' : ''}}"><view></view></view></button>
+        <button class="switch-row last" data-key="save" bindtap="togglePref"><text>自动保存到相册</text><view class="switch {{prefs.save ? 'switch-on' : ''}}"><view></view></view></button>
+      </view>
+
+      <text class="overline block-title">SECURITY</text>
+      <view class="group-card">
+        <view class="profile-row"><view class="profile-label"><image class="profile-label-icon" src="/assets/icons/lock-brand.svg" mode="aspectFit" /><text>账号安全</text></view><view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+        <view class="profile-row last"><view class="profile-label"><image class="profile-label-icon" src="/assets/icons/shield-brand.svg" mode="aspectFit" /><text>隐私设置</text></view><view><image class="row-chev" src="/assets/icons/chevron-right-muted.svg" mode="aspectFit" /></view></view>
+      </view>
+      <button class="logout-btn">退出登录</button>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{current == 'help'}}" class="screen {{screenReady ? 'screen-in' : ''}}">
+    <status-bar />
+    <mini-nav title="帮助与反馈" show-back="{{true}}" right-capsule="{{false}}" bindback="goBack" />
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
+      <text class="overline">HELP</text>
+      <view class="headline"><text class="display mid">有什么</text><text class="display mid accent italic">疑问</text></view>
+      <view class="help-cards">
+        <view class="help-card"><view class="row-icon warm"><image class="row-icon-img" src="/assets/icons/star-brand.svg" mode="aspectFit" /></view><text>使用指南</text><text>拍摄到生成全流程</text></view>
+        <view class="help-card"><view class="row-icon warm"><image class="row-icon-img" src="/assets/icons/star-brand.svg" mode="aspectFit" /></view><text>常见问题</text><text>12 条用户高频问答</text></view>
+      </view>
+
+      <text class="overline block-title">FAQ</text>
+      <view class="group-card">
+        <view wx:for="{{faqs}}" wx:key="q" class="faq-row {{index == faqs.length - 1 ? 'last' : ''}}">
+          <text>{{item.q}}</text>
+          <text>{{item.a}}</text>
+        </view>
+      </view>
+
+      <text class="overline block-title">CONTACT</text>
+      <view class="contact-card">
+        <text class="contact-title">意见与建议</text>
+        <text class="contact-sub">告诉我们你想要的下一种风格</text>
+        <textarea class="feedback" placeholder="留下你的想法..."></textarea>
+        <button class="primary-btn">提交反馈</button>
+      </view>
+      <text class="version">PETPOSTER · V 1.2.0</text>
+    </scroll-view>
+  </view>
+</view>

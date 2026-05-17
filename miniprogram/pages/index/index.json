@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "custom",
+  "disableScroll": true,
+  "usingComponents": {
+    "status-bar": "../../components/status-bar/status-bar",
+    "mini-nav": "../../components/mini-nav/mini-nav",
+    "tab-bar": "../../components/tab-bar/tab-bar"
+  }
+}

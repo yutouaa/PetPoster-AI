@@ -1,0 +1,40 @@
+@import "./styles/tokens.wxss";
+
+page {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(1200rpx 600rpx at 10% -10%, #F4E4DA 0%, rgba(244, 228, 218, 0) 60%),
+    radial-gradient(800rpx 500rpx at 110% 10%, #E4ECE9 0%, rgba(228, 236, 233, 0) 55%),
+    #F7F2EA;
+  color: #161311;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Serif SC", "Songti SC", "Microsoft YaHei", sans-serif;
+}
+
+view,
+text,
+scroll-view,
+button,
+image,
+textarea {
+  box-sizing: border-box;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+  background: transparent;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+}
+
+button::after {
+  border: 0;
+}
+
+image {
+  display: block;
+}
