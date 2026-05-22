@@ -6,6 +6,11 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'LineChart' });
 
+const props = defineProps<{
+  trend: Api.PetPoster.TrendItem[];
+  revenue?: Api.PetPoster.RevenueTrendItem[];
+}>();
+
 const appStore = useAppStore();
 
 const { domRef, updateOptions } = useEcharts(() => ({
@@ -18,8 +23,10 @@ const { domRef, updateOptions } = useEcharts(() => ({
       }
     }
   },
+  animationDuration: 400,
+  animationEasing: 'cubicOut',
   legend: {
-    data: [$t('page.home.downloadCount'), $t('page.home.registerCount')]
+    data: [$t('page.home.downloadCount'), $t('page.home.registerCount'), $t('page.home.revenue')]
   },
   grid: {
     left: '3%',
@@ -94,21 +101,28 @@ const { domRef, updateOptions } = useEcharts(() => ({
       emphasis: {
         focus: 'series'
       },
-      data: []
+      data: [] as number[]
+    },
+    {
+      color: '#f59e0b',
+      name: $t('page.home.revenue'),
+      type: 'line',
+      smooth: true,
+      emphasis: {
+        focus: 'series'
+      },
+      data: [] as number[]
     }
   ]
 }));
 
-async function mockData() {
-  await new Promise(resolve => {
-    setTimeout(resolve, 1000);
-  });
-
+function refreshChart() {
   updateOptions(opts => {
-    opts.xAxis.data = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00', '24:00'];
-    opts.series[0].data = [4623, 6145, 6268, 6411, 1890, 4251, 2978, 3880, 3606, 4311];
-    opts.series[1].data = [2208, 2016, 2916, 4512, 8281, 2008, 1963, 2367, 2956, 678];
-
+    opts.xAxis.data = props.trend.map(item => item.date);
+    opts.series[0].data = props.trend.map(item => item.count);
+    opts.series[1].data = props.trend.map(item => item.success);
+    const revenueMap = new Map((props.revenue || []).map(r => [r.date, r.amount]));
+    opts.series[2].data = props.trend.map(item => revenueMap.get(item.date) ?? 0);
     return opts;
   });
 }
@@ -116,18 +130,16 @@ async function mockData() {
 function updateLocale() {
   updateOptions((opts, factory) => {
     const originOpts = factory();
-
     opts.legend.data = originOpts.legend.data;
     opts.series[0].name = originOpts.series[0].name;
     opts.series[1].name = originOpts.series[1].name;
-
+    opts.series[2].name = originOpts.series[2].name;
     return opts;
   });
 }
 
-async function init() {
-  mockData();
-}
+watch(() => props.trend, refreshChart, { immediate: true });
+watch(() => props.revenue, refreshChart);
 
 watch(
   () => appStore.locale,
@@ -135,9 +147,6 @@ watch(
     updateLocale();
   }
 );
-
-// init
-init();
 </script>
 
 <template>

@@ -97,12 +97,14 @@ const steps = [
   "即将完成"
 ];
 
-const purchases = [
-  { id: "p1", title: "高级会员 · 季度", credit: "+ 60 次", amount: "¥ 68.00", date: "2026-05-10", status: "成功" },
-  { id: "p2", title: "单次套餐 · 10 张", credit: "+ 10 次", amount: "¥ 18.00", date: "2026-04-22", status: "成功" },
-  { id: "p3", title: "单次套餐 · 5 张", credit: "+ 5 次", amount: "¥ 10.00", date: "2026-04-08", status: "成功" },
-  { id: "p4", title: "新用户体验包", credit: "+ 3 次", amount: "¥ 0.00", date: "2026-03-30", status: "赠送" }
-];
+const categoryLabels = {
+  classic: "经典",
+  editorial: "潮流",
+  vintage: "复古",
+  fun: "趣味"
+};
+
+const purchases = [];
 
 const notifs = [
   { id: "n1", tag: "活动", title: "六折充值仅剩 2 天", body: "限时优惠到 5 月 17 日，错过再等三个月。", time: "刚刚", unread: true },
@@ -171,16 +173,22 @@ function normalizeTemplate(template, index) {
   }
   const slug = config.slug || String(template.id);
   const en = config.en || fallback.en;
+  const category = categoryLabels[template.category] || template.category || config.cat || fallback.cat;
   return {
-    id: String(template.id),
+    id: String(slug),
     templateId: template.id,
     no: config.no || String(index + 1).padStart(2, "0"),
     name: template.name,
     en,
     enUpper: String(en).toUpperCase(),
-    cat: config.cat || template.category || fallback.cat,
+    cat: category,
     image: template.coverUrl || template.previewUrl || config.localImage || fallback.image
   };
+}
+
+function formatSyncTime(date) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 function normalizeHistoryTask(task, cards) {
@@ -204,6 +212,7 @@ Page({
   enterTimer: null,
   sheetTimer: null,
   photoPopTimer: null,
+  templateSyncPromise: null,
 
   data: {
     current: "home",
@@ -218,6 +227,13 @@ Page({
     displayResultImage: styleCards[0].image,
     generationError: "",
     apiError: "",
+    historyError: "",
+    templateError: "",
+    templatesLoading: false,
+    templatesLoadedAt: "",
+    templatesUsingFallback: true,
+    templateSyncText: "本地默认模板",
+    refresherTriggered: false,
     uploading: false,
     resultMeta: {
       elapsed: "-",
@@ -235,11 +251,13 @@ Page({
     petPhotos,
     styleCards,
     filteredStyles: styleCards,
+    featuredStyle: styleCards[0],
     pickedStyle: styleCards[0],
     currentStyle: styleCards[0],
     historyItems,
     favs: historyItems.filter((item) => item.saved),
     purchases,
+    quotaBalance: 0,
     notifs,
     faqs,
     renderSteps: [],
@@ -267,8 +285,19 @@ Page({
       progress,
       screenReady: true
     });
-    this.loadTemplates();
-    this.loadHistory();
+    this.loadTemplates({ silent: true }).then(() => {
+      this.loadHistory();
+    });
+  },
+
+  onShow() {
+    if (this.data.current !== "generating") {
+      this.loadTemplates({ silent: true, force: true });
+    }
+  },
+
+  onPullDownRefresh() {
+    this.onTemplateRefresh();
   },
 
   onUnload() {
@@ -285,9 +314,11 @@ Page({
       : styleSource.filter((item) => item.cat === next.cat);
     const pickedStyle = styleSource.find((item) => String(item.id) === String(next.picked)) || styleSource[0];
     const currentStyle = styleSource.find((item) => String(item.id) === String(next.styleId)) || styleSource[0];
+    const featuredStyle = styleSource[0];
     const stepIdx = Math.min(steps.length - 1, Math.floor(next.progress / 20));
     return Object.assign({}, patch, {
       filteredStyles,
+      featuredStyle,
       pickedStyle,
       currentStyle,
       favs: historySource.filter((item) => item.saved),
@@ -310,24 +341,91 @@ Page({
     this.setData(this.buildComputed(patch));
   },
 
-  async loadTemplates() {
+  async loadTemplates(options) {
+    const opts = options || {};
+    if (this.templateSyncPromise) {
+      return this.templateSyncPromise;
+    }
+
+    this.setData({
+      templatesLoading: true,
+      templateError: "",
+      templateSyncText: "正在同步后端模板..."
+    });
+
+    this.templateSyncPromise = this.syncTemplates(opts);
+    try {
+      return await this.templateSyncPromise;
+    } finally {
+      this.templateSyncPromise = null;
+    }
+  },
+
+  async syncTemplates() {
     try {
       const templates = await api.listTemplates();
       const cards = (templates || []).map(normalizeTemplate);
       if (!cards.length) {
-        return;
+        const fallbackCats = ["全部"].concat(Array.from(new Set(styleCards.map((item) => item.cat))));
+        this.setWithComputed({
+          apiError: "后端暂无已上架模板，已使用本地默认模板",
+          templateError: "后端暂无已上架模板，已使用本地默认模板",
+          templatesLoading: false,
+          templatesUsingFallback: true,
+          templatesLoadedAt: "",
+          templateSyncText: "后端暂无已上架模板，已使用本地默认模板",
+          cats: fallbackCats,
+          cat: fallbackCats.includes(this.data.cat) ? this.data.cat : "全部",
+          styleCards,
+          picked: safeStyle(this.data.picked, styleCards),
+          styleId: safeStyle(this.data.styleId, styleCards)
+        });
+        return [];
       }
       const cats = ["全部"].concat(Array.from(new Set(cards.map((item) => item.cat))));
       const picked = safeStyle(this.data.picked, cards);
+      const syncedAt = formatSyncTime(new Date());
       this.setWithComputed({
         apiError: "",
+        templateError: "",
+        templatesLoading: false,
+        templatesUsingFallback: false,
+        templatesLoadedAt: syncedAt,
+        templateSyncText: `已同步 ${cards.length} 个后端模板 · ${syncedAt}`,
         cats,
+        cat: cats.includes(this.data.cat) ? this.data.cat : "全部",
         styleCards: cards,
         picked,
         styleId: safeStyle(this.data.styleId, cards)
       });
+      return cards;
     } catch (error) {
-      this.setData({ apiError: error.message || "模板接口不可用，已使用本地样式" });
+      const message = error.message || "模板接口不可用";
+      const hasBackendTemplates = !this.data.templatesUsingFallback && this.data.styleCards && this.data.styleCards.length;
+      const templateSyncText = hasBackendTemplates
+        ? `模板同步失败，仍显示上次同步内容：${message}`
+        : `模板接口不可用，已使用本地默认模板：${message}`;
+      this.setData({
+        apiError: message,
+        templateError: templateSyncText,
+        templatesLoading: false,
+        templatesUsingFallback: !hasBackendTemplates,
+        templateSyncText
+      });
+      return [];
+    }
+  },
+
+  async manualSyncTemplates() {
+    await this.loadTemplates({ force: true });
+  },
+
+  async onTemplateRefresh() {
+    this.setData({ refresherTriggered: true });
+    await this.loadTemplates({ force: true });
+    this.setData({ refresherTriggered: false });
+    if (wx.stopPullDownRefresh) {
+      wx.stopPullDownRefresh();
     }
   },
 
@@ -346,7 +444,33 @@ Page({
         historyItems: records.map((item) => normalizeHistoryTask(item, this.data.styleCards))
       });
     } catch (error) {
-      this.setData({ apiError: error.message || "历史接口不可用，已使用本地记录" });
+      this.setData({ historyError: error.message || "历史接口不可用，已使用本地记录" });
+    }
+  },
+
+  async loadWalletData() {
+    const userId = getApp().globalData.userId;
+    try {
+      const balance = await api.getQuotaBalance(userId);
+      this.setData({ quotaBalance: (balance && balance.balance) || 0 });
+    } catch (error) {
+      this.setData({ quotaBalance: 0 });
+    }
+    try {
+      const data = await api.getQuotaTransactions(userId, 1, 20);
+      const records = data && data.records ? data.records : [];
+      const typeLabels = { recharge: "充值", consume: "消费", refund: "退还", admin_adjust: "管理员调整" };
+      const purchases = records.map((item, index) => ({
+        id: item.id || index,
+        title: typeLabels[item.type] || item.type,
+        amount: item.amount > 0 ? `+${item.amount}` : String(item.amount),
+        credit: `余额 ${item.balanceAfter}`,
+        date: item.createdAt ? new Date(item.createdAt).toLocaleDateString("zh-CN") : "-",
+        status: item.remark || ""
+      }));
+      this.setData({ purchases });
+    } catch (error) {
+      this.setData({ purchases: [] });
     }
   },
 
@@ -385,6 +509,12 @@ Page({
     this.stopTimer();
     this.closeSheet();
     this.enterScreen({ current: screen });
+    if (screen === "style") {
+      this.loadTemplates({ silent: true, force: true });
+    }
+    if (screen === "wallet") {
+      this.loadWalletData();
+    }
   },
 
   setScreen(event) {

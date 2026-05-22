@@ -6,12 +6,26 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'PieChart' });
 
+const props = defineProps<{
+  statusDistribution: Api.PetPoster.ChartItem[];
+}>();
+
 const appStore = useAppStore();
+
+const statusColorMap: Record<string, string> = {
+  success: '#67c23a',
+  failed: '#f56c6c',
+  processing: '#e6a23c',
+  pending: '#409eff'
+};
 
 const { domRef, updateOptions } = useEcharts(() => ({
   tooltip: {
     trigger: 'item'
   },
+  animationDuration: 400,
+  animationEasing: 'cubicOut',
+  animationDelay: (idx: number) => idx * 30,
   legend: {
     bottom: '1%',
     left: 'center',
@@ -44,24 +58,25 @@ const { domRef, updateOptions } = useEcharts(() => ({
       labelLine: {
         show: false
       },
-      data: [] as { name: string; value: number }[]
+      data: [] as { name: string; value: number; itemStyle?: { color: string } }[]
     }
   ]
 }));
 
-async function mockData() {
-  await new Promise(resolve => {
-    setTimeout(resolve, 1000);
-  });
+const statusLabelMap: Record<string, string> = {
+  pending: '待处理',
+  processing: '生成中',
+  success: '成功',
+  failed: '失败'
+};
 
+function refreshChart() {
   updateOptions(opts => {
-    opts.series[0].data = [
-      { name: $t('page.home.study'), value: 65 },
-      { name: $t('page.home.entertainment'), value: 5 },
-      { name: $t('page.home.work'), value: 18 },
-      { name: $t('page.home.rest'), value: 12 }
-    ];
-
+    opts.series[0].data = props.statusDistribution.map(item => ({
+      name: statusLabelMap[item.name] || item.name,
+      value: item.value,
+      itemStyle: { color: statusColorMap[item.name] || '#909399' }
+    }));
     return opts;
   });
 }
@@ -69,23 +84,12 @@ async function mockData() {
 function updateLocale() {
   updateOptions((opts, factory) => {
     const originOpts = factory();
-
     opts.series[0].name = originOpts.series[0].name;
-
-    opts.series[0].data = [
-      { name: $t('page.home.study'), value: 65 },
-      { name: $t('page.home.entertainment'), value: 5 },
-      { name: $t('page.home.work'), value: 18 },
-      { name: $t('page.home.rest'), value: 12 }
-    ];
-
     return opts;
   });
 }
 
-async function init() {
-  mockData();
-}
+watch(() => props.statusDistribution, refreshChart, { immediate: true });
 
 watch(
   () => appStore.locale,
@@ -93,9 +97,6 @@ watch(
     updateLocale();
   }
 );
-
-// init
-init();
 </script>
 
 <template>

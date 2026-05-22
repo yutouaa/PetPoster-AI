@@ -27,7 +27,15 @@ function createEmptyDashboard(): Api.PetPoster.DashboardMetrics {
       highValueUserCount: 0
     },
     topTemplates: [],
-    recentTasks: []
+    recentTasks: [],
+    taskDuration: { avg: 0, p50: 0, p95: 0, sampleSize: 0 },
+    failureTypeDistribution: [],
+    retryEffectiveness: { attempted: 0, succeeded: 0, rate: 0 },
+    revenueTrend: [],
+    consumptionPerUser: 0,
+    recentTimeouts24h: 0,
+    periodComparison: null,
+    days: 7
   };
 }
 
@@ -138,6 +146,9 @@ function buildTrendOption() {
 
   return {
     color: ['#409eff', '#67c23a', '#f56c6c', '#d97757'],
+    animationDuration: 400,
+    animationEasing: 'cubicOut' as const,
+    animationDelay: (idx: number) => idx * 20,
     tooltip: {
       trigger: 'axis' as const
     },
@@ -201,6 +212,9 @@ function buildTrendOption() {
 function buildStyleOption() {
   return {
     color: ['#d97757', '#409eff', '#67c23a', '#e6a23c', '#8e9dff', '#26deca', '#f56c6c', '#909399'],
+    animationDuration: 400,
+    animationEasing: 'cubicOut' as const,
+    animationDelay: (idx: number) => idx * 30,
     tooltip: {
       trigger: 'item' as const
     },
@@ -232,6 +246,9 @@ function buildStatusOption() {
 
   return {
     color: ['#409eff'],
+    animationDuration: 400,
+    animationEasing: 'cubicOut' as const,
+    animationDelay: (idx: number) => idx * 40,
     tooltip: {
       trigger: 'axis' as const
     },
@@ -269,6 +286,8 @@ function buildPortraitOption() {
 
   return {
     color: ['#d97757'],
+    animationDuration: 400,
+    animationEasing: 'cubicOut' as const,
     tooltip: {},
     radar: {
       radius: '66%',

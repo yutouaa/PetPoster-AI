@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     generated_image_dir: str = Field(default="./uploads", alias="GENERATED_IMAGE_DIR")
     public_base_url: str = Field(default="http://127.0.0.1:8000", alias="PUBLIC_BASE_URL")
     max_upload_size: int = Field(default=10485760, alias="MAX_UPLOAD_SIZE")
+    task_timeout_minutes: int = Field(default=5, alias="TASK_TIMEOUT_MINUTES")
 
     @field_validator("admin_jwt_secret")
     @classmethod

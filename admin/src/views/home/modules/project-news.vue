@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'ProjectNews' });
 
-interface NewsItem {
-  id: number;
-  content: string;
-  time: string;
-}
+const props = defineProps<{
+  recentTasks: Api.PetPoster.RecentTask[];
+}>();
 
-const newses = computed<NewsItem[]>(() => [
-  { id: 1, content: $t('page.home.projectNews.desc1'), time: '2025-05-10 14:30:00' },
-  { id: 2, content: $t('page.home.projectNews.desc2'), time: '2025-05-12 09:15:22' },
-  { id: 3, content: $t('page.home.projectNews.desc3'), time: '2025-05-13 16:42:18' },
-  { id: 4, content: $t('page.home.projectNews.desc4'), time: '2025-05-15 11:20:45' },
-  { id: 5, content: $t('page.home.projectNews.desc5'), time: '2025-05-16 18:05:33' }
-]);
+const statusLabelMap: Record<string, string> = {
+  pending: '待处理',
+  processing: '生成中',
+  success: '成功',
+  failed: '失败'
+};
+
+const statusTypeMap: Record<string, 'success' | 'warning' | 'info' | 'primary' | 'danger'> = {
+  pending: 'info',
+  processing: 'warning',
+  success: 'success',
+  failed: 'danger'
+};
 </script>
 
 <template>
@@ -25,20 +28,28 @@ const newses = computed<NewsItem[]>(() => [
       <ElRow>
         <ElCol :span="18">{{ $t('page.home.projectNews.title') }}</ElCol>
         <ElCol :span="6" class="text-right">
-          <a class="text-primary" href="javascript:;">{{ $t('page.home.projectNews.moreNews') }}</a>
+          <RouterLink class="text-primary" to="/petposter/generations">
+            {{ $t('page.home.projectNews.moreNews') }}
+          </RouterLink>
         </ElCol>
       </ElRow>
     </template>
     <ElTimeline>
-      <ElTimelineItem v-for="item in newses" :key="item.id" :timestamp="item.time" placement="top">
+      <ElTimelineItem v-for="item in props.recentTasks" :key="item.id" :timestamp="item.createdAt" placement="top">
         <ElSpace>
           <div class="size-36px shrink-0 overflow-hidden rd-1/2 flex-center bg-primary/10">
             <SvgIcon icon="material-symbols:pets" class="text-18px text-primary" />
           </div>
-          <p>{{ item.content }}</p>
+          <p>
+            {{ item.templateName }}
+            <ElTag size="small" :type="statusTypeMap[item.status] || 'info'" class="ml-8px">
+              {{ statusLabelMap[item.status] || item.status }}
+            </ElTag>
+          </p>
         </ElSpace>
       </ElTimelineItem>
     </ElTimeline>
+    <ElEmpty v-if="props.recentTasks.length === 0" :image-size="80" description="暂无任务记录" />
   </ElCard>
 </template>
 

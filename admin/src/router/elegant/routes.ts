@@ -391,6 +391,28 @@ export const generatedRoutes: GeneratedRoute[] = [
     },
     children: [
       {
+        name: 'petposter_ai-providers',
+        path: '/petposter/ai-providers',
+        component: 'view.petposter_ai-providers',
+        meta: {
+          title: 'petposter_ai-providers',
+          i18nKey: 'route.petposter_ai-providers',
+          icon: 'material-symbols:cloud-sync-rounded',
+          order: 4
+        }
+      },
+      {
+        name: 'petposter_audit-log',
+        path: '/petposter/audit-log',
+        component: 'view.petposter_audit-log',
+        meta: {
+          title: 'petposter_audit-log',
+          i18nKey: 'route.petposter_audit-log',
+          icon: 'material-symbols:fact-check-rounded',
+          order: 8
+        }
+      },
+      {
         name: 'petposter_dashboard',
         path: '/petposter/dashboard',
         component: 'view.petposter_dashboard',
@@ -399,6 +421,39 @@ export const generatedRoutes: GeneratedRoute[] = [
           i18nKey: 'route.petposter_dashboard',
           icon: 'material-symbols:dashboard-rounded',
           order: 1
+        }
+      },
+      {
+        name: 'petposter_failed-tasks',
+        path: '/petposter/failed-tasks',
+        component: 'view.petposter_failed-tasks',
+        meta: {
+          title: 'petposter_failed-tasks',
+          i18nKey: 'route.petposter_failed-tasks',
+          icon: 'material-symbols:replay-rounded',
+          order: 7
+        }
+      },
+      {
+        name: 'petposter_generations',
+        path: '/petposter/generations',
+        component: 'view.petposter_generations',
+        meta: {
+          title: 'petposter_generations',
+          i18nKey: 'route.petposter_generations',
+          icon: 'material-symbols:auto-awesome-rounded',
+          order: 3
+        }
+      },
+      {
+        name: 'petposter_quota',
+        path: '/petposter/quota',
+        component: 'view.petposter_quota',
+        meta: {
+          title: 'petposter_quota',
+          i18nKey: 'route.petposter_quota',
+          icon: 'material-symbols:account-balance-wallet-rounded',
+          order: 5
         }
       },
       {
@@ -413,14 +468,14 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
-        name: 'petposter_generations',
-        path: '/petposter/generations',
-        component: 'view.petposter_generations',
+        name: 'petposter_xhs-posts',
+        path: '/petposter/xhs-posts',
+        component: 'view.petposter_xhs-posts',
         meta: {
-          title: 'petposter_generations',
-          i18nKey: 'route.petposter_generations',
-          icon: 'material-symbols:auto-awesome-rounded',
-          order: 3
+          title: 'petposter_xhs-posts',
+          i18nKey: 'route.petposter_xhs-posts',
+          icon: 'material-symbols:rocket-launch-rounded',
+          order: 6
         }
       }
     ]

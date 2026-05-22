@@ -21,6 +21,7 @@ class GenerationTask(Base):
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     retry_count: Mapped[int] = mapped_column(default=0)
     request_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
     completed_at: Mapped[datetime | None] = mapped_column(nullable=True)

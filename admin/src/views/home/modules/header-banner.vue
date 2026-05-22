@@ -6,6 +6,10 @@ import { $t } from '@/locales';
 
 defineOptions({ name: 'HeaderBanner' });
 
+const props = defineProps<{
+  dashboard: Api.PetPoster.DashboardMetrics | null;
+}>();
+
 const appStore = useAppStore();
 const authStore = useAuthStore();
 
@@ -17,10 +21,16 @@ interface StatisticData {
   value: number;
 }
 
+const pendingCount = computed(() => {
+  if (!props.dashboard) return 0;
+  const item = props.dashboard.statusDistribution.find(s => s.name === 'pending');
+  return item?.value || 0;
+});
+
 const statisticData = computed<StatisticData[]>(() => [
-  { id: 0, title: $t('page.home.projectCount'), value: 25 },
-  { id: 1, title: $t('page.home.todo'), value: 4, formatter: (val: number) => `${val}/${16}` },
-  { id: 2, title: $t('page.home.message'), value: 12 }
+  { id: 0, title: $t('page.home.projectCount'), value: props.dashboard?.templateCount || 0 },
+  { id: 1, title: $t('page.home.todo'), value: pendingCount.value },
+  { id: 2, title: $t('page.home.message'), value: props.dashboard?.todayGenerationCount || 0 }
 ]);
 </script>
 

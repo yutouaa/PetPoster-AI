@@ -64,9 +64,14 @@ declare module "@elegant-router/types" {
     "multi-menu_second_child": "/multi-menu/second/child";
     "multi-menu_second_child_home": "/multi-menu/second/child/home";
     "petposter": "/petposter";
+    "petposter_ai-providers": "/petposter/ai-providers";
+    "petposter_audit-log": "/petposter/audit-log";
     "petposter_dashboard": "/petposter/dashboard";
+    "petposter_failed-tasks": "/petposter/failed-tasks";
     "petposter_generations": "/petposter/generations";
+    "petposter_quota": "/petposter/quota";
     "petposter_templates": "/petposter/templates";
+    "petposter_xhs-posts": "/petposter/xhs-posts";
     "plugin": "/plugin";
     "plugin_barcode": "/plugin/barcode";
     "plugin_charts": "/plugin/charts";
@@ -193,9 +198,14 @@ declare module "@elegant-router/types" {
     | "manage_user"
     | "multi-menu_first_child"
     | "multi-menu_second_child_home"
+    | "petposter_ai-providers"
+    | "petposter_audit-log"
     | "petposter_dashboard"
+    | "petposter_failed-tasks"
     | "petposter_generations"
+    | "petposter_quota"
     | "petposter_templates"
+    | "petposter_xhs-posts"
     | "plugin_barcode"
     | "plugin_charts_antv"
     | "plugin_charts_echarts"

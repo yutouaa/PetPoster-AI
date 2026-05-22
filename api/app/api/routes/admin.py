@@ -3,7 +3,7 @@ import logging
 from collections import defaultdict
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -115,6 +115,8 @@ def admin_me(
 def admin_dashboard(
     current_admin: Annotated[dict, Depends(get_current_admin)],
     db: Session = Depends(get_db),
+    days: int = Query(7, ge=1, le=90),
+    compare: bool = Query(False),
 ) -> dict:
-    logger.info("admin.dashboard admin=%s", current_admin.get("sub"))
-    return success_response(get_dashboard_metrics(db))
+    logger.info("admin.dashboard admin=%s days=%s compare=%s", current_admin.get("sub"), days, compare)
+    return success_response(get_dashboard_metrics(db, days=days, compare=compare))

@@ -46,7 +46,8 @@ async def create_generation_task(
     db: Session = Depends(get_db),
 ) -> dict:
     """创建生成任务"""
-    _check_generation_rate(request.user_id or "anonymous")
+    user_id = request.user_id or "anonymous"
+    _check_generation_rate(user_id)
 
     # 验证模板存在
     template = db.query(Template).filter(Template.id == request.template_id).first()
@@ -60,10 +61,20 @@ async def create_generation_task(
     if not request.image_urls or len(request.image_urls) == 0:
         raise AppError("NO_IMAGES", "请至少上传一张照片", 400)
 
-    # 创建任务记录
+    # 创建任务记录并 flush 获取 ID
     task = generation_task_service.create_generation_task(
         db, request.template_id, request.user_id, request.image_urls
     )
+    db.flush()
+
+    # 配额扣减（带 reference_id，无需回填）
+    from app.services import quota_service
+
+    if not quota_service.deduct(db, user_id, amount=1, reference_id=str(task.id)):
+        db.rollback()
+        raise AppError("QUOTA_INSUFFICIENT", "生成次数不足，请充值后再试", 403)
+
+    db.commit()
 
     # 添加后台任务
     background_tasks.add_task(process_generation_task, task.id)

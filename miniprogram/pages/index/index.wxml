@@ -13,9 +13,9 @@
       </view>
     </view>
 
-    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content home-scroll">
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" refresher-enabled="{{true}}" refresher-triggered="{{refresherTriggered}}" bindrefresherrefresh="onTemplateRefresh" class="scroll-content home-scroll">
       <button class="hero-card" bindtap="openStyle">
-        <image class="hero-img" src="{{styleCards[0].image}}" mode="aspectFill" />
+        <image class="hero-img" src="{{featuredStyle.image}}" mode="aspectFill" />
         <view class="hero-mask"></view>
         <view class="hero-copy">
           <text class="overline light">本周精选 · WEEKLY</text>
@@ -27,7 +27,7 @@
         <view class="hero-foot">
           <view>
             <text class="overline light muted-light">FEATURED STYLE</text>
-            <text class="hero-style">古典油画系列</text>
+            <text class="hero-style">{{featuredStyle.name}}系列</text>
           </view>
           <view class="view-pill">
             <text>查看</text>
@@ -113,13 +113,21 @@
     <status-bar />
     <mini-nav title="选择风格" show-back="{{true}}" bindback="goBack" />
 
-    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content style-scroll">
+    <scroll-view scroll-y enhanced show-scrollbar="{{false}}" refresher-enabled="{{true}}" refresher-triggered="{{refresherTriggered}}" bindrefresherrefresh="onTemplateRefresh" class="scroll-content style-scroll">
       <text class="overline">STYLE · COLLECTION</text>
       <view class="headline">
-        <text class="display">八种风格，</text>
+        <text class="display">{{styleCards.length}}种风格，</text>
         <text class="display accent italic">一只缪斯。</text>
       </view>
       <text class="subcopy">已选 {{photoCount}} 张照片 · 选择一个风格开始创作</text>
+
+      <view wx:if="{{templatesLoading || templateError || templatesLoadedAt || templatesUsingFallback}}" class="template-sync {{templateError ? 'template-sync-warn' : ''}}">
+        <view class="template-sync-copy">
+          <text class="template-sync-title">{{templateSyncText}}</text>
+          <text class="template-sync-sub">{{templatesUsingFallback ? '本地预览不可生成真实任务，请确认后端服务和已上架模板。' : '后台模板更新后，返回本页或下拉即可刷新。'}}</text>
+        </view>
+        <button class="template-sync-btn" loading="{{templatesLoading}}" disabled="{{templatesLoading}}" bindtap="manualSyncTemplates">同步</button>
+      </view>
 
       <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="cat-scroll">
         <view class="cat-row">
@@ -390,7 +398,7 @@
     <scroll-view scroll-y enhanced show-scrollbar="{{false}}" class="scroll-content plain-scroll">
       <view class="balance-card">
         <text class="overline light muted-light">CURRENT · BALANCE</text>
-        <view class="balance-row"><text>120</text><text>次 · 可用</text></view>
+        <view class="balance-row"><text>{{quotaBalance}}</text><text>次 · 可用</text></view>
         <view class="balance-actions"><button>立即充值</button><button>兑换码</button></view>
       </view>
       <text class="overline block-title">RECORDS</text>

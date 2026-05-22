@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -13,18 +14,35 @@ from app.core.errors import AppError, app_error_handler, unhandled_error_handler
 from app.db.bootstrap import bootstrap_dev_database
 from app.services.ai_service import get_ai_service
 from app.services.image_service import get_image_service
+from app.services.timeout_scanner import scan_timeout_tasks
 
 logger = logging.getLogger(__name__)
+
+_scanner_task: asyncio.Task | None = None
+
+
+async def _timeout_scanner_loop():
+    """每 60 秒扫描一次超时任务"""
+    while True:
+        await asyncio.sleep(60)
+        try:
+            scan_timeout_tasks()
+        except Exception:
+            logger.exception("[超时扫描] 循环异常")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    global _scanner_task
     bootstrap_dev_database()
     image_service = get_image_service()
     deleted = await image_service.cleanup_old_images(max_age_hours=72)
     if deleted:
         logger.info("startup cleanup: removed %s old uploaded files", deleted)
+    _scanner_task = asyncio.create_task(_timeout_scanner_loop())
     yield
+    if _scanner_task:
+        _scanner_task.cancel()
     ai_service = get_ai_service()
     await ai_service.close()
 

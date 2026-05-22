@@ -7,34 +7,64 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.errors import AppError
+from app.models.ai_provider import AiProvider
 
 logger = logging.getLogger(__name__)
 
 
+def _get_active_provider(db: Session | None) -> dict | None:
+    """从数据库获取优先级最高的活跃 provider 配置。"""
+    if db is None:
+        return None
+    try:
+        provider = db.scalars(
+            select(AiProvider).where(AiProvider.is_active == True).order_by(AiProvider.priority.desc()).limit(1)
+        ).first()
+        if provider:
+            return {
+                "base_url": provider.base_url,
+                "api_key": provider.api_key,
+                "model": provider.model_name,
+                "timeout": provider.timeout,
+            }
+    except Exception:
+        pass
+    return None
+
+
 class AIService:
-    def __init__(self, settings=None, client=None):
+    def __init__(self, settings=None, client=None, db: Session | None = None):
         self.settings = settings or get_settings()
         self._owns_client = client is None
-        base_url = self.settings.rightcode_base_url.rstrip("/")
+
+        provider = _get_active_provider(db)
+        base_url = (provider["base_url"] if provider else self.settings.rightcode_base_url).rstrip("/")
+        api_key = provider["api_key"] if provider else self.settings.rightcode_api_key
+        self._model = provider["model"] if provider else self.settings.rightcode_model
+        timeout = provider["timeout"] if provider else self.settings.rightcode_timeout
+
         if base_url.endswith("/v1"):
             base_url = base_url[:-3]
         headers = {"Content-Type": "application/json"}
-        if self.settings.rightcode_api_key:
-            headers["Authorization"] = f"Bearer {self.settings.rightcode_api_key}"
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+        self._api_key = api_key
         self.client = client or httpx.AsyncClient(
             base_url=base_url,
             headers=headers,
-            timeout=self.settings.rightcode_timeout,
+            timeout=timeout,
         )
 
     async def generate_image(
         self, prompt: str, negative_prompt: str = "", image_urls: list[str] | None = None
     ) -> dict:
         """生成图片，返回 {image_url, cost}"""
-        if not self.settings.rightcode_api_key:
+        if not self._api_key:
             raise AppError("AI_MISSING_API_KEY", "缺少 RIGHTCODE_API_KEY", 500)
 
         max_retries = 3
@@ -54,7 +84,7 @@ class AIService:
     async def _call_api(self, prompt: str, negative_prompt: str, image_urls: list[str]) -> dict:
         """调用 Right Code 图像生成 API。"""
         payload = {
-            "model": self.settings.rightcode_model,
+            "model": self._model,
             "prompt": self._build_content(prompt, negative_prompt, image_urls),
             "size": "1024x1024",
             "n": 1,
@@ -124,8 +154,10 @@ class AIService:
 _ai_service: AIService | None = None
 
 
-def get_ai_service() -> AIService:
+def get_ai_service(db: Session | None = None) -> AIService:
     global _ai_service
+    if db is not None:
+        return AIService(db=db)
     if _ai_service is None:
         _ai_service = AIService()
     return _ai_service

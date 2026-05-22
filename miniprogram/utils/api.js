@@ -56,7 +56,7 @@ function uploadImage(filePath) {
 
 module.exports = {
   listTemplates() {
-    return request({ url: "/templates" });
+    return request({ url: "/templates", data: { _t: Date.now() } });
   },
   createGenerationTask(data) {
     return request({ url: "/generation-tasks", method: "POST", data });
@@ -66,6 +66,12 @@ module.exports = {
   },
   listGenerationTasks(params) {
     return request({ url: "/generation-tasks", data: params || {} });
+  },
+  getQuotaBalance(userId) {
+    return request({ url: "/quota/balance", data: { user_id: userId } });
+  },
+  getQuotaTransactions(userId, page, pageSize) {
+    return request({ url: "/quota/transactions", data: { user_id: userId, page: page || 1, page_size: pageSize || 20 } });
   },
   uploadImage
 };

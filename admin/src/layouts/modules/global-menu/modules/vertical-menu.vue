@@ -45,7 +45,6 @@ watch(
         :default-active="selectedKeyDummy"
         :default-openeds="expandedKeys"
         :collapse="appStore.siderCollapse"
-        :collapse-transition="false"
         @select="val => handleSelect(val as RouteKey)"
       >
         <MenuItem v-for="item in routeStore.menus" :key="item.key" :item="item" :index="item.key" />

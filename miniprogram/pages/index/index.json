@@ -1,5 +1,6 @@
 {
   "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
   "disableScroll": true,
   "usingComponents": {
     "status-bar": "../../components/status-bar/status-bar",

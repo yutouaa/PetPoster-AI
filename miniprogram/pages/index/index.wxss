@@ -704,6 +704,60 @@ tab-bar {
   font-weight: 600;
 }
 
+.template-sync {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 23rpx;
+  padding: 19rpx 23rpx;
+  border: 2rpx solid #E8DFD4;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.template-sync-warn {
+  border-color: rgba(194, 80, 43, 0.32);
+  background: rgba(255, 247, 241, 0.92);
+}
+
+.template-sync-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 19rpx;
+}
+
+.template-sync-title,
+.template-sync-sub {
+  display: block;
+  line-height: 1.45;
+}
+
+.template-sync-title {
+  color: #2B2420;
+  font-size: 23rpx;
+  font-weight: 600;
+}
+
+.template-sync-sub {
+  margin-top: 4rpx;
+  color: #8C817A;
+  font-size: 19rpx;
+}
+
+.template-sync-btn {
+  width: 108rpx;
+  height: 54rpx;
+  border-radius: 27rpx;
+  background: #161311;
+  color: #FFFFFF;
+  font-size: 21rpx;
+  line-height: 54rpx;
+}
+
+.template-sync-btn[disabled] {
+  opacity: 0.56;
+}
+
 .style-grid {
   display: flex;
   flex-wrap: wrap;
